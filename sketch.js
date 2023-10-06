@@ -2,10 +2,12 @@
 var trex, trexRunning
 var ground, groundImg
 var invGround
+var cloud,cloudIMG
 //preload carrega as mídias do jogo
 function preload() {
   trexRunning = loadAnimation('./images/trex3.png', "./images/trex4.png")
   groundImg = loadImage("./images/ground2.png")
+  cloudIMG = loadImage("./images/cloud.png")
 }
 
 
@@ -32,10 +34,10 @@ function setup() {
 
 //draw faz o movimento, a ação do jogo
 function draw() {
-  background("lightgray");
+  background("#ebf5ff");
 
   //pulo do trex
-  //console.log(trex.y)
+  //console.log(Math.round(random(1,5)))
   if (keyDown("space") && trex.y > 150) {
     trex.velocityY = -10
   }
@@ -44,11 +46,25 @@ function draw() {
   if (ground.x < 0) {
     ground.x = ground.width / 2
   }
+  createClouds()
   //coordenadas do mouse na tela
   text("X: " + mouseX + " / Y: " + mouseY, mouseX, mouseY)
   drawSprites();
+  
+}
+function createClouds(){
+
+if (frameCount%60==0) {
+    cloud=createSprite(610,random(0,110),30,15)
+    cloud.velocityX=-3
+    cloud.scale=random(0.5, 1.5)
+    cloud.addImage(cloudIMG)
+    cloud.depth=trex.depth-1 
 }
 
+
+
+}
 
 
 
