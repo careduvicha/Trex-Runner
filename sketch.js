@@ -2,9 +2,13 @@
 var trex, trexRunning
 var ground, groundImg
 var invGround
-var cloud, cloudIMG
-var cactus, cactusimg1, cactusimg2, cactusimg3, cactusimg4, cactusimg5, cactusimg6
-var score=0
+var cloud, cloudIMG,cloudGroup
+var cactus, cactusimg1, cactusimg2, cactusimg3, cactusimg4, cactusimg5, cactusimg6,cactusGroup
+var score = 0
+const PLAY = 0
+const END = 1
+var gameState = PLAY
+
 //preload carrega as mídias do jogo
 function preload() {
   trexRunning = loadAnimation('./images/trex3.png', "./images/trex4.png")
@@ -22,7 +26,8 @@ function preload() {
 //setup faz a configuração
 function setup() {
   createCanvas(600, 200);
-
+cactusGroup=new Group()
+cloudGroup=new Group()
   //sprite trex
   trex = createSprite(50, 150, 30, 70)
   trex.addAnimation("running", trexRunning)
@@ -32,7 +37,7 @@ function setup() {
   //sprite Solo
   ground = createSprite(300, 180, 600, 10)
   ground.addImage(groundImg)
-  ground.velocityX = -2
+
 
   invGround = createSprite(300, 190, 600, 10)
   invGround.visible = false
@@ -43,24 +48,38 @@ function setup() {
 //draw faz o movimento, a ação do jogo
 function draw() {
   background("#ebf5ff");
-  
 
-  //pulo do trex
-  //console.log(Math.round(random(1,5)))
-  if (keyDown("space") && trex.y > 150) {
-    trex.velocityY = -10
+  if (gameState == PLAY) {
+    //pulo do trex
+    //console.log(Math.round(random(1,5)))
+    if (keyDown("space") && trex.y > 150) {
+      trex.velocityY = -10
+    }
+    if (ground.x < 0) {
+      ground.x = ground.width / 2
+    }
+    ground.velocityX = -2 
+    createClouds()
+    createCactus()
+    score = Math.round(frameCount / 3)
+    if(trex.isTouching(cactusGroup)){
+      gameState=END
+     }
+  } else if (gameState == END) {
+    ground.velocityX = 0
+  cactusGroup.setVelocityXEach(0)
+  cloudGroup.setVelocityXEach(0)
   }
+
+
   trex.velocityY += 0.5
   trex.collide(invGround)
-  if (ground.x < 0) {
-    ground.x = ground.width / 2
-  }
-  createClouds()
-  createCactus()
+
+
   fill("black")
   textSize(20)
- text("Score: "+score,480,40)
- score=Math.round(frameCount/3)
+  text("Score: " + score, 480, 40)
+
   //coordenadas do mouse na tela
   text("X: " + mouseX + " / Y: " + mouseY, mouseX, mouseY)
   drawSprites();
@@ -73,9 +92,10 @@ function createClouds() {
     cloud.scale = random(0.5, 1.5)
     cloud.addImage(cloudIMG)
     cloud.depth = trex.depth - 1
-    cloud.lifetime=200
+    cloud.lifetime = 200
+    cloudGroup.add(cloud)
   }
-  
+
 }
 function createCactus() {
   if (frameCount % 85 == 0) {
@@ -105,6 +125,7 @@ function createCactus() {
     }
     cactus.scale = 0.4
     cactus.lifetime = 200
+    cactusGroup.add(cactus)
   }
 }
 
