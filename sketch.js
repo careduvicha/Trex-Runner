@@ -1,5 +1,6 @@
-
-var trex, trexRunning
+var gameover,gameoverimg
+var restart,restartimg
+var trex, trexRunning,trexCollided
 var ground, groundImg
 var invGround
 var cloud, cloudIMG,cloudGroup
@@ -20,6 +21,9 @@ function preload() {
   cactusimg4 = loadImage("./images/obstacle4.png")
   cactusimg5 = loadImage("./images/obstacle5.png")
   cactusimg6 = loadImage("./images/obstacle6.png")
+  trexCollided=loadAnimation("./images/trex_collided.png")
+  gameoverimg=loadImage("./images/gameOver.png")
+ restartimg=loadImage("./images/restart.png")
 }
 
 
@@ -32,13 +36,20 @@ cloudGroup=new Group()
   trex = createSprite(50, 150, 30, 70)
   trex.addAnimation("running", trexRunning)
   trex.scale = 0.5
-
-
+  trex.addAnimation("trexCollided",trexCollided)
+  // trex.debug=true
+  // trex.setCollider("circle",-10,-15,40)
+  trex.setCollider("rectangle",3,-10,45,90,20)
   //sprite Solo
   ground = createSprite(300, 180, 600, 10)
   ground.addImage(groundImg)
 
+  gameover=createSprite(300,100)
+  gameover.addImage(gameoverimg)
 
+  restart=createSprite(300,160,)
+  restart.addImage(restartimg)
+  restart.scale=0.5
   invGround = createSprite(300, 190, 600, 10)
   invGround.visible = false
 
@@ -52,6 +63,8 @@ function draw() {
   if (gameState == PLAY) {
     //pulo do trex
     //console.log(Math.round(random(1,5)))
+    gameover.visible=false
+    restart.visible=false
     if (keyDown("space") && trex.y > 150) {
       trex.velocityY = -10
     }
@@ -66,9 +79,14 @@ function draw() {
       gameState=END
      }
   } else if (gameState == END) {
+    gameover.visible=true
+    restart.visible=true
     ground.velocityX = 0
   cactusGroup.setVelocityXEach(0)
   cloudGroup.setVelocityXEach(0)
+  trex.changeAnimation("trexCollided")
+  cloudGroup.setLifetimeEach(-1)
+  cactusGroup.setLifetimeEach(-1)
   }
 
 
